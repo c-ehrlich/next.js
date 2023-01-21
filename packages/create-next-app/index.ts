@@ -310,25 +310,25 @@ async function run(): Promise<void> {
       if (ciInfo.isCI) {
         program.importAlias = '@/*'
       } else {
-        const styledImportAlias = chalk.hex('#007acc')('import alias')
-        const { importAlias } = await prompts({
-          type: 'text',
-          name: 'importAlias',
-          message: `What ${styledImportAlias} would you like configured?`,
-          initial: getPrefOrDefault('importAlias'),
-        })
-
-        if (!/.+\/\*/.test(importAlias)) {
-          console.error(
-            `${chalk.red(
-              'Error:'
-            )} invalid import alias (${importAlias}), it must follow the pattern <prefix>/*`
-          )
-          process.exit(1)
+        while (!program.importAlias) {
+          const styledImportAlias = chalk.hex('#007acc')('import alias')
+          const { importAlias } = await prompts({
+            type: 'text',
+            name: 'importAlias',
+            message: `What ${styledImportAlias} would you like configured?`,
+            initial: getPrefOrDefault('importAlias'),
+          })
+          if (/.+\/\*/.test(importAlias)) {
+            program.importAlias = importAlias
+            preferences.importAlias = importAlias
+          } else {
+            console.log(
+              `${chalk.red(
+                'Error:'
+              )} invalid import alias (${importAlias}), it must follow the pattern <prefix>/*`
+            )
+          }
         }
-
-        program.importAlias = importAlias
-        preferences.importAlias = importAlias
       }
     }
   }
