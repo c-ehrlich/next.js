@@ -25,6 +25,7 @@ import {
   TemplateMode,
   TemplateType,
 } from './templates'
+import { handleNonEmptyFolder } from './helpers/handle-non-empty-folder'
 
 export class DownloadError extends Error {}
 
@@ -38,6 +39,7 @@ export async function createApp({
   experimentalApp,
   srcDir,
   importAlias,
+  clearDirIfExists,
 }: {
   appPath: string
   packageManager: PackageManager
@@ -48,6 +50,7 @@ export async function createApp({
   experimentalApp: boolean
   srcDir: boolean
   importAlias: string
+  clearDirIfExists?: boolean
 }): Promise<void> {
   let repoInfo: RepoInfo | undefined
   const mode: TemplateMode = typescript ? 'ts' : 'js'
@@ -129,8 +132,9 @@ export async function createApp({
   const appName = path.basename(root)
 
   await makeDir(root)
+
   if (!isFolderEmpty(root, appName)) {
-    process.exit(1)
+    await handleNonEmptyFolder(root, appName, clearDirIfExists)
   }
 
   const useYarn = packageManager === 'yarn'

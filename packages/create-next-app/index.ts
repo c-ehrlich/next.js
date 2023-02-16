@@ -13,6 +13,7 @@ import packageJson from './package.json'
 import ciInfo from 'ci-info'
 import { isFolderEmpty } from './helpers/is-folder-empty'
 import fs from 'fs'
+import { handleNonEmptyFolder } from './helpers/handle-non-empty-folder'
 
 let projectPath: string = ''
 
@@ -206,7 +207,7 @@ async function run(): Promise<void> {
   const folderExists = fs.existsSync(root)
 
   if (folderExists && !isFolderEmpty(root, appName)) {
-    process.exit(1)
+    await handleNonEmptyFolder(root, appName, false)
   }
 
   const example = typeof program.example === 'string' && program.example.trim()
